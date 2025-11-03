@@ -93,6 +93,18 @@ func (client *DynamicSourceLSPConn) Shutdown() error {
 	return conn.Close(websocket.StatusNormalClosure, "")
 }
 
+// Blocks until the connection is closed. Returns immediately if connection is already closed.
+func (client *DynamicSourceLSPConn) AwaitClosed() {
+	client.lock.Lock()
+	closed := client.closed
+	client.lock.Unlock()
+
+	if closed == nil {
+		return
+	}
+	<-closed
+}
+
 func (client *DynamicSourceLSPConn) loop() {
 	client.lock.Lock()
 	conn := client.conn
