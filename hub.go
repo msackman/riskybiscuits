@@ -117,7 +117,12 @@ func (server *DynamicSourceHubConn) loop() {
 	for {
 		msgType, data, err := conn.Read(ctx)
 		if err != nil {
-			fmt.Println(err)
+			switch websocket.CloseStatus(err) {
+			case websocket.StatusNormalClosure,
+				websocket.StatusGoingAway:
+			default:
+				fmt.Printf("conn.Read: %v; status %v\n", err, websocket.CloseStatus(err))
+			}
 			return
 		} else if msgType != websocket.MessageBinary {
 			fmt.Println(errors.New("Not a binary message"))
