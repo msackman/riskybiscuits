@@ -46,6 +46,10 @@ func NewDynamicSourceConn(conn *websocket.Conn, srcId uuid.UUID, handler Dynamic
 	return server, nil
 }
 
+func (server *DynamicSourceHubConn) Done() <-chan struct{} {
+	return server.closed
+}
+
 // Shutdown the connection. Idempotent.
 func (server *DynamicSourceHubConn) Shutdown() error {
 	server.lock.Lock()
